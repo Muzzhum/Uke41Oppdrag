@@ -17,35 +17,36 @@ namespace Uke41Oppdrag
 			InitializeComponent();
 		}
 
-		Random rng = new Random();
-		void diceThrower (int numOfSides, int[] diceArray, decimal numOfThrows)
-		{
-			if (diceArray.Length != numOfSides)
-				return;
+        List<int> diceArray;
+        int totalThrows = 0;
 
+        Random rng = new Random();
+
+        // throws 
+		void diceThrower (int numOfSides, decimal numOfThrows)
+		{
 			for (int iii = 0; iii < numOfThrows; iii++)
 			{
 				diceArray[rng.Next(0, numOfSides)]++;
 			}
 		}
 
-		//int[] diceArray;
-		decimal sum = 0;
+
 		private void ThrowBtn_Click(object sender, EventArgs e)
 		{
-			
-			int[] diceArray = new int[(int)SidesNumUD.Value] { };
+            if (diceArray == null || diceArray.Count != (int)SidesNumUD.Value)
+            {
+                diceArray = Enumerable.Repeat(0, (int)SidesNumUD.Value).ToList();
+                totalThrows = 0;
+            }
 
-			diceThrower((int)SidesNumUD.Value, diceArray, ThrowsNumUD.Value);
+            totalThrows += (int)SidesNumUD.Value;
 
-			/*		
-			for (int iii = 0; iii < diceArray.Length; iii++)
-				sum += diceArray[iii];
-			*/
-			for (int iii = 0; iii < diceArray.Length; iii++)
-			{
-				StatChart.Series["Antall"].Points.AddXY(iii, iii+1);
-			}
+            diceThrower((int)SidesNumUD.Value,ThrowsNumUD.Value);
+            StatChart.Series["Antall"].Points.Clear();
+
+            for (int iii = 0; iii < diceArray.Count; iii++)
+				StatChart.Series["Antall"].Points.AddXY(iii + 1, (double)diceArray[iii] / totalThrows);
 		}
-	}
+    }
 }
